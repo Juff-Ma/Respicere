@@ -1,9 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Respicere.Server.Models;
-using System;
-using System.Collections.Generic;
+﻿namespace Respicere.Server.Data;
 
-namespace Respicere.Server.Data;
+using Microsoft.EntityFrameworkCore;
+using Shared.Models;
 
 public class DataDbContext : DbContext
 {

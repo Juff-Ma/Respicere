@@ -11,9 +11,10 @@ var builder = WebApplication.CreateBuilder(args);
 var options = new Configuration();
 builder.Configuration.Bind("Configuration", options);
 
-CaptureDeviceDescriptor deviceDescriptor;
-VideoCharacteristics characteristics;
+CaptureDeviceDescriptor? deviceDescriptor = null;
+VideoCharacteristics? characteristics = null;
 
+bool cameraAcessible = true;
 try
 {
     var captureDevices = new CaptureDevices();
@@ -28,14 +29,19 @@ catch (Exception e)
     Console.WriteLine("Couldn't start app due to an Error while creating video device, please check your configuration ");
     Console.WriteLine(e.Message);
     Console.WriteLine(e.StackTrace);
-    return;
+    cameraAcessible = false;
+    if (!builder.Environment.IsDevelopment())
+    {
+        return;
+    }
 }
 
 // Add services to the container.
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
-builder.Services.AddSingleton<ICam>(new Cam(deviceDescriptor, characteristics));
+if (cameraAcessible)
+    builder.Services.AddSingleton<ICam>(new Cam(deviceDescriptor!, characteristics!));
 builder.Services.ConfigureWritable<Configuration>(builder.Configuration.GetSection("Configuration"));
 
 var appExecutable = System.Reflection.Assembly.GetExecutingAssembly().Location;
@@ -44,8 +50,6 @@ var dbPath = Path.Join(path, "data.db");
 
 builder.Services.AddDbContext<DataDbContext>(options =>
     options.UseSqlite($"Data Source={dbPath}"));
-
-
 
 var app = builder.Build();
 

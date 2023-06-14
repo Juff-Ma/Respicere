@@ -8,4 +8,5 @@ public class Configuration
     public string? CameraFps { get; set;}
     public string? PhotoPath { get; set;}
     public string? PhotoCronCycle { get; set; }
+    public string? PhotoEnabled { get; set; }
 }
