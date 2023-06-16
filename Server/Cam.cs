@@ -84,7 +84,7 @@ public class Cam : ICam
 
     public async Task TakeSnapshotAsync(Stream stream)
     {
-        if ((!_captureDevice?.IsRunning) ?? false)
+        if (((!_captureDevice?.IsRunning) ?? false) || LastFrame is null)
         {
             var imageData = await _captureDeviceDescriptor.TakeOneShotAsync(_videoCharacteristics);
             LastFrame = Image.Load(imageData);

@@ -5,6 +5,8 @@ using Configuration = Respicere.Shared.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Respicere.Server.Interfaces;
 using Respicere.Server;
+using Quartz;
+using Respicere.Server.Jobs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,7 +43,10 @@ catch (Exception e)
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 if (cameraAcessible)
+{
     builder.Services.AddSingleton<ICam>(new Cam(deviceDescriptor!, characteristics!));
+    builder.Services.AddTransient<TakePhotoJob>();
+}
 builder.Services.ConfigureWritable<Configuration>(builder.Configuration.GetSection("Configuration"));
 
 var appExecutable = System.Reflection.Assembly.GetExecutingAssembly().Location;
@@ -50,6 +55,25 @@ var dbPath = Path.Join(path, "data.db");
 
 builder.Services.AddDbContext<DataDbContext>(options =>
     options.UseSqlite($"Data Source={dbPath}"));
+
+builder.Services.AddQuartz(quartz =>
+{
+    quartz.UseMicrosoftDependencyInjectionJobFactory();
+
+    var takePhotoJobKey = new JobKey("TakePhotoJob");
+
+    if (options.GetPhotoEnabled())
+    {
+        quartz.AddJob<TakePhotoJob>(options => options.WithIdentity(takePhotoJobKey));
+
+        quartz.AddTrigger(triggerOptions => triggerOptions
+            .ForJob(takePhotoJobKey)
+            .WithIdentity("TakePhotoJobTrigger")
+            .WithCronSchedule(options.GetPhotoTakeCronCycle()));
+    }
+});
+
+builder.Services.AddQuartzServer(options => options.WaitForJobsToComplete = true);
 
 var app = builder.Build();
 
@@ -63,9 +87,8 @@ else
     app.UseExceptionHandler("/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
+    app.UseHttpsRedirection();
 }
-
-app.UseHttpsRedirection();
 
 app.UseBlazorFrameworkFiles();
 app.UseStaticFiles();

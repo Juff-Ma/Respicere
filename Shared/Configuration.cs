@@ -7,6 +7,8 @@ public class Configuration
     public string? CameraResolution { get; set; }
     public string? CameraFps { get; set;}
     public string? PhotoPath { get; set;}
-    public string? PhotoCronCycle { get; set; }
+    public string? PhotoTakeCronCycle { get; set; }
     public string? PhotoEnabled { get; set; }
+    public string? PhotoDeleteCronCycle { get; set; }
+    public string? PhotoDeleteOlderThan { get; set; }
 }

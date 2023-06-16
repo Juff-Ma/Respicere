@@ -21,6 +21,12 @@ public static class ConfigurationExtensions
     public static string GetPhotoPath(this Configuration configuration) =>
         configuration.PhotoPath ?? "./photos";
 
-    public static string GetPhotoCronCycle(this Configuration configuration) =>
-        configuration.PhotoCronCycle ?? "0/10 * * ? * * *";
+    public static string GetPhotoTakeCronCycle(this Configuration configuration) =>
+        configuration.PhotoTakeCronCycle ?? "0/10 * * ? * * *";
+
+    public static string GetPhotoDeleteCronCycle(this Configuration configuration) =>
+        configuration.PhotoDeleteCronCycle ?? "0 0 0 ? * 1/3 *";
+
+    public static TimeSpan GetPhotoDeleteOlderThan(this Configuration configuration) =>
+        TimeSpan.Parse(configuration.PhotoDeleteOlderThan ?? "2.00:00");
 }
