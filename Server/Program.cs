@@ -42,12 +42,15 @@ catch (Exception e)
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
+
+builder.Services.ConfigureWritable<Configuration>(builder.Configuration.GetSection("Configuration"));
+
 if (cameraAcessible)
 {
     builder.Services.AddSingleton<ICam>(new Cam(deviceDescriptor!, characteristics!));
     builder.Services.AddTransient<TakePhotoJob>();
+    builder.Services.AddTransient<DeletePhotosJob>();
 }
-builder.Services.ConfigureWritable<Configuration>(builder.Configuration.GetSection("Configuration"));
 
 var appExecutable = System.Reflection.Assembly.GetExecutingAssembly().Location;
 var path = Path.GetDirectoryName(appExecutable)!;
@@ -61,15 +64,21 @@ builder.Services.AddQuartz(quartz =>
     quartz.UseMicrosoftDependencyInjectionJobFactory();
 
     var takePhotoJobKey = new JobKey("TakePhotoJob");
+    var deletePhotosJobKey = new JobKey("DeletePhotosJob");
 
     if (options.GetPhotoEnabled())
     {
         quartz.AddJob<TakePhotoJob>(options => options.WithIdentity(takePhotoJobKey));
-
         quartz.AddTrigger(triggerOptions => triggerOptions
             .ForJob(takePhotoJobKey)
             .WithIdentity("TakePhotoJobTrigger")
             .WithCronSchedule(options.GetPhotoTakeCronCycle()));
+
+        quartz.AddJob<DeletePhotosJob>(options => options.WithIdentity(deletePhotosJobKey));
+        quartz.AddTrigger(triggerOptions => triggerOptions
+            .ForJob(deletePhotosJobKey)
+            .WithIdentity("DeletePhotosJobTrigger")
+            .WithCronSchedule(options.GetPhotoDeleteCronCycle()));
     }
 });
 

@@ -6,7 +6,7 @@ using Shared.Models;
 
 public static class DataDbImageSetExtensions
 {
-    public static async Task<bool> DeleteImageAsync(this DataDbContext db, SecurityImage? image, string basePath)
+    public static bool DeleteImage(this DbSet<SecurityImage> set, SecurityImage? image, string basePath)
     {
         bool result = true;
         if (image is null)
@@ -34,8 +34,7 @@ public static class DataDbImageSetExtensions
             result = false;
         }
 
-        db.Images.Remove(image);
-        await db.SaveChangesAsync();
+        set.Remove(image);
 
         return result;
     }

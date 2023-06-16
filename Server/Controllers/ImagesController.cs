@@ -63,12 +63,13 @@ public class ImagesController : ControllerBase
     {
         var image = await _db.Images.FindAsync(id);
 
-        bool deleted = await _db.DeleteImageAsync(image, _config.Value.GetPhotoPath());
+        bool deleted = _db.Images.DeleteImage(image, _config.Value.GetPhotoPath());
 
         if (!deleted)
         {
             return NotFound();
         }
+        await _db.SaveChangesAsync();
 
         return NoContent();
     }

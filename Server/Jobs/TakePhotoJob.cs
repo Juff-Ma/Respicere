@@ -27,7 +27,7 @@ public class TakePhotoJob : IJob
     {
         var image = new SecurityImage()
         {
-            Created = DateTime.Now,
+            Created = DateTime.UtcNow,
             DoNotDelete = false
         };
 
@@ -44,6 +44,6 @@ public class TakePhotoJob : IJob
 
         await _cam.TakeSnapshotAsync(stream);
 
-        _logger.LogInformation($"Took new Photo with id: {image.Id}");
+        _logger.LogInformation("Took new Photo with id: {id}", image.Id);
     }
 }
