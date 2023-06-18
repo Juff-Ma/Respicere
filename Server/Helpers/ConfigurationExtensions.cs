@@ -3,6 +3,7 @@
 namespace Respicere.Server.Helpers;
 
 using Configuration = Shared.Configuration;
+using FlashCap.Utilities;
 
 public static class ConfigurationExtensions
 {
@@ -12,8 +13,9 @@ public static class ConfigurationExtensions
     public static int GetHeight(this Configuration configuration) =>
         int.Parse(configuration.CameraResolution?.Split('x')[1] ?? "720");
 
-    public static int GetFps(this Configuration configuration) =>
-        int.Parse(configuration.CameraFps ?? "30");
+    public static Fraction GetFps(this Configuration configuration) =>
+        new(int.Parse(configuration.CameraFpsNumerator ?? "30"),
+            int.Parse(configuration.CameraFpsDenominator ?? "1"));
 
     public static bool GetPhotoEnabled(this Configuration configuration) =>
         bool.Parse(configuration.PhotoEnabled ?? "false");
@@ -28,5 +30,5 @@ public static class ConfigurationExtensions
         configuration.PhotoDeleteCronCycle ?? "0 0 0 ? * 1/3 *";
 
     public static TimeSpan GetPhotoDeleteOlderThan(this Configuration configuration) =>
-        TimeSpan.Parse(configuration.PhotoDeleteOlderThan ?? "2.00:00");
+        TimeSpan.TryParse(configuration.PhotoDeleteOlderThan ?? "2.00:00", out TimeSpan span) ? span : TimeSpan.FromDays(2);
 }

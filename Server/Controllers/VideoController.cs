@@ -3,6 +3,8 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Text;
 using Interfaces;
+using Helpers;
+using Shared.Models;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -15,8 +17,29 @@ public class VideoController : ControllerBase
         _cam = cam;
     }
 
-    [HttpGet]
-    [Route("cam/mjpeg")]
+    [HttpGet("cam")]
+    public string GetCamName()
+    {
+        return _cam.GetCamName();
+    }
+
+    [HttpGet("cam/modes")]
+    public async IAsyncEnumerable<VideoMode> GetPossibleModes()
+    {
+        var modes = _cam.GetVideoCharacteristics()
+                            .Where(x => x.PixelFormat != FlashCap.PixelFormats.Unknown)
+                            .Distinct(new DistinctCharacteristicsComparer())
+                            .OrderByDescending(x => (x.Width * x.Height) + x.FramesPerSecond)
+                            .ToAsyncEnumerable();
+        await foreach (var mode in modes)
+        {
+            yield return new() { Width =  mode.Width, Height = mode.Height,
+                                            FpsNumerator = mode.FramesPerSecond.Numerator,
+                                            FpsDenominator = mode.FramesPerSecond.Denominator};
+        }
+    }
+
+    [HttpGet("cam/mjpeg")]
     public async Task Get()
     {
         Response.StatusCode = 206;

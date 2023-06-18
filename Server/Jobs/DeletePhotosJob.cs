@@ -26,9 +26,9 @@ public class DeletePhotosJob : IJob
         var time = DateTime.UtcNow;
         var deleteAfter = _options.Value.GetPhotoDeleteOlderThan();
 
-        await foreach (var image in 
-            _db.Images.Where(x => 
-                ((time - x.Created) > deleteAfter) && 
+        await foreach (var image in
+            _db.Images.Where(x =>
+                ((time - x.Created) > deleteAfter) &&
                 !x.DoNotDelete)
             .AsAsyncEnumerable())
         {

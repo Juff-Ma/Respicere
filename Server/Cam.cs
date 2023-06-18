@@ -13,6 +13,8 @@ public class Cam : ICam
     private CaptureDevice? _captureDevice;
     private readonly CaptureDeviceDescriptor _captureDeviceDescriptor;
 
+    public VideoCharacteristics[] VideoCharacteristics { get { return _captureDeviceDescriptor.Characteristics; } }
+    public string CamName { get { return _captureDeviceDescriptor.Name; } }
     public Image? LastFrame { get; private set; }
 
     public Cam(CaptureDeviceDescriptor captureDeviceDescriptor, VideoCharacteristics videoCharacteristics)
@@ -91,5 +93,15 @@ public class Cam : ICam
         }
 
         await LastFrame.SaveAsJpegAsync(stream);
+    }
+
+    public VideoCharacteristics[] GetVideoCharacteristics()
+    {
+        return VideoCharacteristics;
+    }
+
+    public string GetCamName()
+    {
+        return CamName;
     }
 }

@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33723.286
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Respicere.Server", "Server\Respicere.Server.csproj", "{DDAB7B76-AA69-4D03-A3EB-0BD72A352FBA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Respicere.Server", "Server\Respicere.Server.csproj", "{DDAB7B76-AA69-4D03-A3EB-0BD72A352FBA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Respicere.Client", "Client\Respicere.Client.csproj", "{41E918BA-C182-442C-8461-CF94A6011F8B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Respicere.Client", "Client\Respicere.Client.csproj", "{41E918BA-C182-442C-8461-CF94A6011F8B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Respicere.Shared", "Shared\Respicere.Shared.csproj", "{E1C99377-8315-47D1-ABEC-A12A8E5EC58E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Respicere.Shared", "Shared\Respicere.Shared.csproj", "{E1C99377-8315-47D1-ABEC-A12A8E5EC58E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

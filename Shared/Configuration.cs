@@ -5,7 +5,8 @@ namespace Respicere.Shared;
 public class Configuration
 {
     public string? CameraResolution { get; set; }
-    public string? CameraFps { get; set;}
+    public string? CameraFpsNumerator { get; set;}
+    public string? CameraFpsDenominator { get; set; }
     public string? PhotoPath { get; set;}
     public string? PhotoTakeCronCycle { get; set; }
     public string? PhotoEnabled { get; set; }

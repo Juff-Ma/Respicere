@@ -24,7 +24,8 @@ try
     characteristics = deviceDescriptor.Characteristics
         .First(x => x.FramesPerSecond == options.GetFps() &&
                 x.Height == options.GetHeight() &&
-                x.Width == options.GetWidth());
+                x.Width == options.GetWidth() &&
+                x.PixelFormat != PixelFormats.Unknown);
 }
 catch (Exception e)
 {

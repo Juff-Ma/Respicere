@@ -1,0 +1,95 @@
+﻿@page "/settings"
+
+@using Respicere.Shared;
+@using Respicere.Shared.Models;
+
+@inject HttpClient Client;
+
+<PageTitle>Settings</PageTitle>
+
+<h1>Settings</h1>
+
+<form @onsubmit="@HandleSave">
+    <p>Current Cam: @camName</p>
+    <div class="mb-5">
+        <label for="camModeSelector" class="form-label">Camera Mode</label>
+        <select class="form-select" id="camModeSelector" aria-label="Camera Mode" @bind="@currentVideoMode" required>
+            @foreach(var mode in configuration?.VideoModes ?? new VideoMode[0])
+            {
+                if (mode != currentVideoMode)
+                {
+                    <option value="@mode">@mode.ToString(true)</option>
+                }
+                else
+                {
+                    <option value="@mode" selected>@mode.ToString(true)</option>
+                }
+            }
+        </select>
+    </div>
+    <div class="form-check form-switch mb-4">
+        <input class="form-check-input" type="checkbox" id="photoEnabledSwitch" @bind="@photosEnabled">
+        <label class="form-check-label" for="photoEnabledSwitch">Enable Photo taking</label>
+    </div>
+    <div class="mb-4">
+        <label for="photosPath" class="form-label">Path for saved photos</label>
+        <input type="text" id="photosPath" class="form-control" disabled="@photosEnabledAttribute" @bind="photoPath">
+    </div>
+    <div class="mb-4">
+        <label for="cronTake" class="form-label">Cron Trigger for taking a photo (default: 10 seconds)</label>
+        <input type="text" id="cronTake" class="form-control" disabled="@photosEnabledAttribute" @bind="photoTakeCronCycle">
+    </div>
+    <div class="mb-4">
+        <label for="cronDelete" class="form-label">Cron Trigger for deleting old photos (default: 3 days)</label>
+        <input type="text" id="cronDelete" class="form-control" disabled="@photosEnabledAttribute" @bind="photoDeleteCronCycle">
+    </div>
+    <div class="mb-3">
+        <label for="olderThanDelete" class="form-label">Maximum age of photos (default: 2 days)</label>
+        <input type="text" id="olderThanDelete" class="form-control" disabled="@photosEnabledAttribute" @bind="photoDeleteOlderThan">
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>
+
+@code {
+    private ConfigurationWrapper? configuration;
+
+    private string? camName;
+    private VideoMode? currentVideoMode;
+    private bool photosEnabled;
+    private bool photosEnabledAttribute => !photosEnabled;
+    private string? photoPath;
+    private string? photoTakeCronCycle;
+    private string? photoDeleteCronCycle;
+    private string? photoDeleteOlderThan;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var config = await Client.GetFromJsonAsync<Configuration>("api/settings");
+        var videoModes = await Client.GetFromJsonAsync<IEnumerable<VideoMode>>("api/video/cam/modes");
+        camName = await Client.GetStringAsync("api/video/cam");
+
+        configuration = new(config ?? new(), videoModes ?? new VideoMode[0]);
+
+        currentVideoMode = configuration.CurrentVideoMode;
+        photosEnabled = configuration.PhotoEnabled;
+        photoPath = configuration.PhotoPath;
+        photoTakeCronCycle = configuration.PhotoTakeCronCycle;
+        photoDeleteCronCycle = configuration.PhotoDeleteCronCycle;
+        photoDeleteOlderThan = configuration.PhotoDeleteOlderThan;
+    }
+
+    private async Task HandleSave()
+    {
+        if (configuration is not null)
+        {
+            configuration.CurrentVideoMode = currentVideoMode!;
+            configuration.PhotoEnabled = photosEnabled;
+            configuration.PhotoPath = photoPath!;
+            configuration.PhotoTakeCronCycle = photoTakeCronCycle!;
+            configuration.PhotoDeleteCronCycle = photoDeleteCronCycle!;
+            configuration.PhotoDeleteOlderThan = photoDeleteOlderThan!;
+        }
+
+        await Client.PutAsJsonAsync("api/settings", configuration?.ToConfiguration());
+    }
+}

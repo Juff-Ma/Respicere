@@ -24,9 +24,11 @@ public class SettingsController : ControllerBase
     }
 
     [HttpPut]
-    public void Put(Configuration configuration)
+    public IActionResult Put(Configuration configuration)
     {
         _configOptions.Update(configuration);
         _logger.LogInformation("updated configuration, restart required");
+
+        return NoContent();
     }
 }
