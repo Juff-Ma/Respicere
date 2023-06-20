@@ -1,0 +1,46 @@
+﻿@using Respicere.Shared.Models;
+
+<div class="card shadow-sm m-3" style="width: 18rem;">
+  <img src="@ImageUrl" class="card-img-top" alt="image not found or network error">
+  <div class="card-body">
+    <h5 class="card-title">@Image?.Created.ToShortDateString()</h5>
+    <p class="card-text">@Image?.Created.ToLongTimeString()</p>
+    <button @onclick="@DeleteImage" class="btn btn-danger">Delete</button>
+    <button @onclick="@UpdateDoNotDelete" class="@keepButtonClasses">Keep</button>
+  </div>
+</div>
+
+@code {
+        [Parameter]
+        public SecurityImage? Image { get; set; }
+        [Parameter]
+        public string? ImageUrl { get; set; }
+        [Parameter]
+        public Func<Guid?, Task>? DeleteCallback { get; set; }
+        [Parameter]
+        public Func<SecurityImage?, Task>? UpdateCallback { get; set; }
+
+    private bool? keepButtonState => Image?.DoNotDelete;
+    private string keepButtonClasses = "btn";
+
+    protected override void OnInitialized()
+    {
+        keepButtonClasses = (keepButtonState ?? false) ? "btn btn-success" : "btn btn-secondary";
+    }
+
+    private async Task DeleteImage()
+    {
+        await DeleteCallback!.Invoke(Image?.Id);
+    }
+
+    private async Task UpdateDoNotDelete()
+    {
+        Image!.DoNotDelete = !Image.DoNotDelete;
+        await UpdateImage();
+    }
+
+    private async Task UpdateImage()
+    {
+        await UpdateCallback!.Invoke(Image);
+    }
+}

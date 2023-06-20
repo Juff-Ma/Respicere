@@ -24,7 +24,7 @@ public class ImagesController : ControllerBase
     [HttpGet]
     public IEnumerable<SecurityImage> Get()
     {
-        return _db.Images.AsEnumerable();
+        return _db.Images.OrderByDescending(x => x.Created);
     }
 
     [HttpGet("{id}")]
@@ -55,7 +55,9 @@ public class ImagesController : ControllerBase
             return NotFound();
         }
 
-        return File(imagePath, "image/jpeg");
+        var stream = new FileStream(imagePath, FileMode.Open, FileAccess.Read);
+
+        return File(stream, "image/jpeg");
     }
 
     [HttpDelete("{id}")]
@@ -65,11 +67,12 @@ public class ImagesController : ControllerBase
 
         bool deleted = _db.Images.DeleteImage(image, _config.Value.GetPhotoPath());
 
-        if (!deleted)
+        await _db.SaveChangesAsync();
+
+        if(!deleted)
         {
             return NotFound();
         }
-        await _db.SaveChangesAsync();
 
         return NoContent();
     }

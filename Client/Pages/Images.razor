@@ -1,0 +1,80 @@
+﻿@page "/images"
+
+@using Respicere.Shared;
+@using Respicere.Shared.Models;
+
+@inject HttpClient Client;
+
+<PageTitle>Images</PageTitle>
+
+<h1>Taken Images</h1>
+
+<div class="container">
+    @for (int i = 0; i < images?.Count(); i = i + 3)
+    {
+        var j = (i + 3 < images.Count()) ? i + 3 : images.Count();
+        <div class="row">
+            @for (int k = i; k < j; k++)
+            {
+                <div class="col-md-4">
+                    <SecurityImageCard Image="images.ElementAt(k)" ImageUrl="@GetImageUrl(images.ElementAt(k))" DeleteCallback="DeleteImage" UpdateCallback="UpdateImage"/>
+                </div>
+            }
+
+        </div>
+    }
+</div>
+
+@code {
+    private IEnumerable<SecurityImage>? images;
+
+    private int enumerator = 0;
+    private int Enumerator
+    {
+        get
+        {
+            return enumerator++;
+        }    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        images = await Client.GetFromJsonAsync<IEnumerable<SecurityImage>>("api/images");
+    }
+
+    private async Task DeleteImage(Guid? id)
+    {
+        try
+        {
+            await Client.DeleteAsync($"api/images/{id}");
+            images = null;
+            await InvokeAsync(StateHasChanged);
+            images = await Client.GetFromJsonAsync<IEnumerable<SecurityImage>>("api/images");
+        }
+        catch
+        {
+            // an error can be ignored because it most likely is a Not Found which is normal here when the image has been deleted at the folder
+        }
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task UpdateImage(SecurityImage? image)
+    {
+        try
+        {
+            await Client.PutAsJsonAsync<SecurityImage>($"api/images/{image?.Id}", image!);
+            images = null;
+            await InvokeAsync(StateHasChanged);
+            images = await Client.GetFromJsonAsync<IEnumerable<SecurityImage>>("api/images");
+        }
+        catch
+        {
+            // an error can be ignored because it most likely is a Not Found
+        }
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private string GetImageUrl(SecurityImage image)
+    {
+        return $"api/images/{image.Id}/image.jpg";
+    }
+}
