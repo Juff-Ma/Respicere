@@ -10,7 +10,7 @@ I didn't find something that worked like i wanted it. And in fact most of the sy
 Respicere is based on FlashCap for recording, ImageSharp for Transcoding and Blazor as a frontend.
 
 ## TODO
-**Very near future:** add GitHub actions and Docker support
-**Near Future:** add video recording
-
-**Maybe sometimes:** Add person recognition, create dektop and/or mobile apps
+**Very near future:** add GitHub actions and Docker support  
+**Near Future:** add video recording  
+**Later:** add authetication
+**Maybe sometimes:** Add person recognition, create dektop and/or mobile apps, full blown account system
