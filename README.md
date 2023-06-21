@@ -12,5 +12,5 @@ Respicere is based on FlashCap for recording, ImageSharp for Transcoding and Bla
 ## TODO
 **Very near future:** add GitHub actions and Docker support  
 **Near Future:** add video recording  
-**Later:** add authetication
+**Later:** add authetication  
 **Maybe sometimes:** Add person recognition, create dektop and/or mobile apps, full blown account system
