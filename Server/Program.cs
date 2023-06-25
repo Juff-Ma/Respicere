@@ -109,4 +109,12 @@ app.MapRazorPages();
 app.MapControllers();
 app.MapFallbackToFile("index.html");
 
+app.Lifetime.ApplicationStarted.Register(async () =>
+{
+    var scope = app.Services.CreateScope();
+    var context = scope.ServiceProvider.GetRequiredService<DataDbContext>();
+
+    await context.Database.MigrateAsync();
+});
+
 app.Run();
