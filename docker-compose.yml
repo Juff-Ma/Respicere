@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  respicere.server:
+    image: ${DOCKER_REGISTRY-}respicereserver
+    build:
+      context: .
+      dockerfile: Server/Dockerfile
