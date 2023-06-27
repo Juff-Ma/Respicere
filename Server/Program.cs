@@ -7,6 +7,7 @@ using Respicere.Server.Interfaces;
 using Respicere.Server;
 using Quartz;
 using Respicere.Server.Jobs;
+using Respicere.Server.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -53,12 +54,23 @@ if (cameraAcessible)
     builder.Services.AddTransient<DeletePhotosJob>();
 }
 
-var appExecutable = System.Reflection.Assembly.GetExecutingAssembly().Location;
-var path = Path.GetDirectoryName(appExecutable)!;
-var dbPath = Path.Join(path, "data.db");
+var connectionString = builder.Configuration.GetConnectionString("Database");
 
-builder.Services.AddDbContext<DataDbContext>(options =>
-    options.UseSqlite($"Data Source={dbPath}"));
+builder.Services.AddDbContext<DataDbContext>(DbOptions => {
+    switch (options.GetDbType())
+    {
+        case DbType.SQLite:
+            DbOptions.UseSqlite(connectionString); break;
+        case DbType.SQLServer:
+            DbOptions.UseSqlServer(connectionString); break;
+        case DbType.PostgreSQL:
+            DbOptions.UseNpgsql(connectionString); break;
+        case DbType.MySQL:
+            DbOptions.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)); break;
+        default:
+            DbOptions.UseSqlite(connectionString); break;
+    }
+});
 
 builder.Services.AddQuartz(quartz =>
 {
@@ -83,7 +95,7 @@ builder.Services.AddQuartz(quartz =>
     }
 });
 
-builder.Services.AddQuartzServer(options => options.WaitForJobsToComplete = true);
+builder.Services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);
 
 var app = builder.Build();
 

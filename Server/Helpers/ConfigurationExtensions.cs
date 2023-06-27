@@ -4,6 +4,7 @@ namespace Respicere.Server.Helpers;
 
 using Configuration = Shared.Configuration;
 using FlashCap.Utilities;
+using Models;
 
 public static class ConfigurationExtensions
 {
@@ -31,4 +32,14 @@ public static class ConfigurationExtensions
 
     public static TimeSpan GetPhotoDeleteOlderThan(this Configuration configuration) =>
         TimeSpan.TryParse(configuration.PhotoDeleteOlderThan ?? "2.00:00", out TimeSpan span) ? span : TimeSpan.FromDays(2);
+
+    public static DbType GetDbType(this Configuration configuration) => configuration.DatabaseType?.ToLower() switch
+    {
+        "sqlite" => DbType.SQLite,
+        "sqlserver" => DbType.SQLServer,
+        "postgresql" => DbType.PostgreSQL,
+        "mysql" => DbType.MySQL,
+        "mariadb" => DbType.MySQL,
+        _ => DbType.SQLite
+    };
 }

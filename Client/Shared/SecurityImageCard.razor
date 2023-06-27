@@ -3,10 +3,10 @@
 <div class="card shadow-sm m-3" style="width: 18rem;">
   <img src="@ImageUrl" class="card-img-top" alt="image not found or network error">
   <div class="card-body">
-    <h5 class="card-title">@Image?.Created.ToShortDateString()</h5>
-    <p class="card-text">@Image?.Created.ToLongTimeString()</p>
-    <button @onclick="@DeleteImage" class="btn btn-danger">Delete</button>
-    <button @onclick="@UpdateDoNotDelete" class="@keepButtonClasses">Keep</button>
+        <h5 class="card-title">@Image?.Created.ToLocalTime().ToShortDateString()</h5>
+        <p class="card-text">@Image?.Created.ToLocalTime().ToLongTimeString()</p>
+        <button @onclick="@DeleteImage" class="btn btn-danger">Delete</button>
+        <button @onclick="@UpdateDoNotDelete" class="@keepButtonClasses">Keep</button>
   </div>
 </div>
 

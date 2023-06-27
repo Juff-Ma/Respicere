@@ -12,4 +12,5 @@ public class Configuration
     public string? PhotoEnabled { get; set; }
     public string? PhotoDeleteCronCycle { get; set; }
     public string? PhotoDeleteOlderThan { get; set; }
+    public string? DatabaseType { get; set; }
 }
