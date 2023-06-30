@@ -1,4 +1,4 @@
-﻿// Ignore Spelling: Cron
+﻿// Ignore Spelling: Cron Fmpeg
 
 namespace Respicere.Server.Helpers;
 
@@ -42,4 +42,7 @@ public static class ConfigurationExtensions
         "mariadb" => DbType.MySQL,
         _ => DbType.SQLite
     };
+
+    public static string GetFFmpegPath(this Configuration configuration) =>
+        Directory.Exists(configuration.FFmpegPath) ? configuration.FFmpegPath : "./ffmpeg";
 }

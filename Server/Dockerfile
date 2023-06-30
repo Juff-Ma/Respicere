@@ -16,7 +16,7 @@ WORKDIR "/src/Server"
 RUN dotnet build "Respicere.Server.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "Respicere.Server.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "Respicere.Server.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app

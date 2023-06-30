@@ -8,6 +8,9 @@ using Respicere.Server;
 using Quartz;
 using Respicere.Server.Jobs;
 using Respicere.Server.Models;
+using Xabe.FFmpeg;
+using Xabe.FFmpeg.Downloader;
+using Xabe.FFmpeg.Exceptions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,7 +33,7 @@ try
 }
 catch (Exception e)
 {
-    Console.WriteLine("Couldn't start app due to an Error while creating video device, please check your configuration ");
+    Console.WriteLine("Couldn't start app due to an Error while creating video device, please check your configuration");
     Console.WriteLine(e.Message);
     Console.WriteLine(e.StackTrace);
     cameraAcessible = false;
@@ -125,8 +128,29 @@ app.Lifetime.ApplicationStarted.Register(async () =>
 {
     var scope = app.Services.CreateScope();
     var context = scope.ServiceProvider.GetRequiredService<DataDbContext>();
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
 
     await context.Database.MigrateAsync();
+
+    //Test for and download FFmpeg if not found
+    logger.LogInformation("searching for FFmpeg");
+    var directory = options.GetFFmpegPath();
+    if (!Directory.Exists(directory))
+        Directory.CreateDirectory(directory);
+    FFmpeg.SetExecutablesPath(directory);
+
+    try
+    {
+        await Probe.New().Start("-version");
+        logger.LogInformation("FFmpeg found!");
+    }
+    catch (FFmpegNotFoundException)
+    {
+        logger.LogInformation("downloading FFmpeg to {directory}", FFmpeg.ExecutablesPath);
+        await FFmpegDownloader.GetLatestVersion(FFmpegVersion.Official, FFmpeg.ExecutablesPath);
+        await Probe.New().Start("-version");
+        logger.LogInformation("downloaded FFmpeg successfully!");
+    }
 });
 
 app.Run();

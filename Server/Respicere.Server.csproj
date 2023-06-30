@@ -28,6 +28,8 @@
 	<PackageReference Include="Quartz.AspNetCore" Version="3.6.3" />
 	<PackageReference Include="SixLabors.ImageSharp" Version="3.0.1" />
 	<PackageReference Include="System.Linq.Async" Version="6.0.1" />
+	<PackageReference Include="Xabe.FFmpeg" Version="5.2.6" />
+	<PackageReference Include="Xabe.FFmpeg.Downloader" Version="5.2.6" />
   </ItemGroup>
 
   <ItemGroup>
