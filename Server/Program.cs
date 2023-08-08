@@ -8,9 +8,7 @@ using Respicere.Server;
 using Quartz;
 using Respicere.Server.Jobs;
 using Respicere.Server.Models;
-using Xabe.FFmpeg;
-using Xabe.FFmpeg.Downloader;
-using Xabe.FFmpeg.Exceptions;
+using FFMediaToolkit;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,6 +39,11 @@ catch (Exception e)
     {
         return;
     }
+}
+
+if (options.GetUseVideo())
+{
+    FFmpegLoader.FFmpegPath = options.GetFFmpegPath();
 }
 
 // Add services to the container.
@@ -123,34 +126,5 @@ app.UseRouting();
 app.MapRazorPages();
 app.MapControllers();
 app.MapFallbackToFile("index.html");
-
-app.Lifetime.ApplicationStarted.Register(async () =>
-{
-    var scope = app.Services.CreateScope();
-    var context = scope.ServiceProvider.GetRequiredService<DataDbContext>();
-    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-
-    await context.Database.MigrateAsync();
-
-    //Test for and download FFmpeg if not found
-    logger.LogInformation("searching for FFmpeg");
-    var directory = options.GetFFmpegPath();
-    if (!Directory.Exists(directory))
-        Directory.CreateDirectory(directory);
-    FFmpeg.SetExecutablesPath(directory);
-
-    try
-    {
-        await Probe.New().Start("-version");
-        logger.LogInformation("FFmpeg found!");
-    }
-    catch (FFmpegNotFoundException)
-    {
-        logger.LogInformation("downloading FFmpeg to {directory}", FFmpeg.ExecutablesPath);
-        await FFmpegDownloader.GetLatestVersion(FFmpegVersion.Official, FFmpeg.ExecutablesPath);
-        await Probe.New().Start("-version");
-        logger.LogInformation("downloaded FFmpeg successfully!");
-    }
-});
 
 app.Run();

@@ -13,5 +13,6 @@ public class Configuration
     public string? PhotoDeleteCronCycle { get; set; }
     public string? PhotoDeleteOlderThan { get; set; }
     public string? DatabaseType { get; set; }
+    public string? UseVideo { get; set; }
     public string? FFmpegPath { get; set; }
 }
