@@ -2,9 +2,9 @@
 
 namespace Respicere.Server.Helpers;
 
-using Configuration = Shared.Configuration;
 using FlashCap.Utilities;
 using Models;
+using Shared;
 using System.Globalization;
 
 public static class ConfigurationExtensions
@@ -46,6 +46,9 @@ public static class ConfigurationExtensions
 
     public static bool GetUseVideo(this Configuration configuration) =>
         bool.TryParse(configuration.UseVideo ?? "false", out bool result) && result;
+
+    public static bool GetUseOwnFFmpegBinaries(this Configuration configuration) =>
+        bool.TryParse(configuration.UseOwnFFmpegBinaries ?? "false", out bool result) && result;
 
     public static string GetFFmpegPath(this Configuration configuration) =>
         Directory.Exists(configuration.FFmpegPath) ? configuration.FFmpegPath : "./ffmpeg";

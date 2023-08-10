@@ -2,6 +2,7 @@
   "profiles": {
     "http": {
       "commandName": "Project",
+      "workingDirectory": "$(TargetDir)",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
@@ -12,6 +13,7 @@
     },
     "https": {
       "commandName": "Project",
+      "workingDirectory": "$(TargetDir)",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
@@ -22,6 +24,7 @@
     },
     "IIS Express": {
       "commandName": "IISExpress",
+      "workingDirectory": "$(TargetDir)",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

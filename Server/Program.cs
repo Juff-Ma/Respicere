@@ -12,6 +12,12 @@ using FFMediaToolkit;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var logger = LoggerFactory.Create(config =>
+{
+    config.AddConsole();
+    config.AddConfiguration(builder.Configuration.GetSection("Logging"));
+}).CreateLogger("Startup");
+
 var options = new Configuration();
 builder.Configuration.Bind("Configuration", options);
 
@@ -31,19 +37,28 @@ try
 }
 catch (Exception e)
 {
-    Console.WriteLine("Couldn't start app due to an Error while creating video device, please check your configuration");
-    Console.WriteLine(e.Message);
-    Console.WriteLine(e.StackTrace);
+    logger.LogCritical(e, "Couldn't start app due to an Error while creating video device, please check your configuration");
     cameraAcessible = false;
     if (!builder.Environment.IsDevelopment())
     {
-        return;
+        Environment.Exit(-1);
     }
 }
 
-if (options.GetUseVideo())
+if (options.GetUseVideo() && cameraAcessible)
 {
-    FFmpegLoader.FFmpegPath = options.GetFFmpegPath();
+    try
+    {
+        if (options.GetUseOwnFFmpegBinaries())
+            FFmpegLoader.FFmpegPath = options.GetFFmpegPath();
+        FFmpegLoader.LoadFFmpeg();
+        FFmpegLoader.SetupLogging();
+        builder.Services.AddSingleton<FFmpegLogWrapper>();
+    }
+    catch (Exception e)
+    {
+        logger.LogError(e, "Couldn't initialize FFmpeg!");
+    }
 }
 
 // Add services to the container.

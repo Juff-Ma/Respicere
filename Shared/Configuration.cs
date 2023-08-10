@@ -14,5 +14,6 @@ public class Configuration
     public string? PhotoDeleteOlderThan { get; set; }
     public string? DatabaseType { get; set; }
     public string? UseVideo { get; set; }
+    public string? UseOwnFFmpegBinaries { get; set; }
     public string? FFmpegPath { get; set; }
 }
