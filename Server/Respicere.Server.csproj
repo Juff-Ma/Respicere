@@ -10,6 +10,14 @@
 	<DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+	<WarningLevel>9999</WarningLevel>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+	<WarningLevel>9999</WarningLevel>
+  </PropertyGroup>
+
   <ItemGroup>
 	<PackageReference Include="FFMediaToolkit" Version="4.5.1" />
 	<PackageReference Include="FlashCap" Version="1.6.0" />
@@ -43,9 +51,7 @@
   </ItemGroup>
 
   <ItemGroup>
-	  <None Include="$(ProjectDir)\lib\**" 
-			CopyToOutputDirectory="PreserveNewest" 
-			Link="runtimes\%(RecursiveDir)\%(Filename)%(Extension)"/>
+	  <None Include="$(ProjectDir)\lib\**" CopyToOutputDirectory="PreserveNewest" Link="runtimes\%(RecursiveDir)\%(Filename)%(Extension)" />
   </ItemGroup>
 
 
