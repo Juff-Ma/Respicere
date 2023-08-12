@@ -99,9 +99,4 @@ public class Cam : ICam
     {
         return VideoCharacteristics;
     }
-
-    public string GetCamName()
-    {
-        return CamName;
-    }
 }

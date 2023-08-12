@@ -20,7 +20,7 @@ public class VideoController : ControllerBase
     [HttpGet("cam")]
     public string GetCamName()
     {
-        return _cam.GetCamName();
+        return _cam.CamName;
     }
 
     [HttpGet("cam/modes")]
@@ -68,7 +68,7 @@ public class VideoController : ControllerBase
     /// Create an appropriate header.
     /// </summary>
     /// <param name="length"></param>
-    /// <returns></returns>
+    /// <returns>the header</returns>
     private static byte[] CreateHeader(int length)
     {
         string header =
