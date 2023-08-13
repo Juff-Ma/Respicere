@@ -2,5 +2,5 @@
 
 public interface IDataPreprocessor : IDataProcessor
 {
-    static abstract byte[] PreprocessData(byte[] data);
+    static abstract object PreprocessData(object data);
 }

@@ -1,6 +1,6 @@
 ﻿namespace Respicere.Server.Interfaces;
 
-public interface IDataProducer
+public interface IDataProducer<in T> where T : IDataProcessor
 {
-    void RegisterDataProcessor(IDataProcessor processor);
+    void RegisterDataProcessor(T processor);
 }
