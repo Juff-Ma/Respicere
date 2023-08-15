@@ -2,5 +2,5 @@
 
 public interface IDataPreprocessor : IDataProcessor
 {
-    static abstract object PreprocessData(object data);
+    static abstract Task<object> PreprocessDataAsync(object data);
 }

@@ -1,20 +1,25 @@
-﻿namespace Respicere.Server.Controllers;
+﻿// Ignore Spelling: mjpeg
+
+namespace Respicere.Server.Controllers;
 
 using Microsoft.AspNetCore.Mvc;
 using System.Text;
 using Interfaces;
 using Helpers;
 using Shared.Models;
+using Respicere.Server.Processors;
 
 [ApiController]
 [Route("api/[controller]")]
 public class VideoController : ControllerBase
 {
     private readonly ICam _cam;
+    private readonly PreprocessorWrapper<MjpegProcessor> _mjpegPreprocessor;
 
-    public VideoController(ICam cam)
+    public VideoController(ICam cam, PreprocessorWrapper<MjpegProcessor> mjpegPreprocessor)
     {
         _cam = cam;
+        _mjpegPreprocessor = mjpegPreprocessor;
     }
 
     [HttpGet("cam")]
@@ -46,7 +51,7 @@ public class VideoController : ControllerBase
         Response.ContentType = "multipart/x-mixed-replace; boundary=frame";
         Response.Headers.Add("Connection", "Keep-Alive");
 
-        StreamingSession session = await _cam.StreamOnAsync(async data =>
+        MjpegProcessor session = new(async data =>
         {
             if (Request.HttpContext.RequestAborted.IsCancellationRequested)
             {
@@ -58,6 +63,8 @@ public class VideoController : ControllerBase
             await Response.BodyWriter.WriteAsync(CreateFooter());
             await Response.BodyWriter.FlushAsync();
         });
+
+        await _mjpegPreprocessor.RegisterDataProcessorAsync(session);
 
         await Response.StartAsync();
 

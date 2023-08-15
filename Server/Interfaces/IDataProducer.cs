@@ -2,5 +2,5 @@
 
 public interface IDataProducer<in T> where T : IDataProcessor
 {
-    void RegisterDataProcessor(T processor);
+    Task RegisterDataProcessorAsync(T processor);
 }

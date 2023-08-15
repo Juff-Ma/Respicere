@@ -6,7 +6,7 @@ namespace Respicere.Server;
 public class PreprocessorWrapper<T> : IDataProcessor, IDataProducer<T> where T : IDataPreprocessor
 {
     private readonly List<IDataProcessor> subscribers = new();
-    private TaskCompletionSource Completion = new();
+    private TaskCompletionSource _completion = new();
 
     public event EventHandler? Done;
 
@@ -17,21 +17,21 @@ public class PreprocessorWrapper<T> : IDataProcessor, IDataProducer<T> where T :
         _producer = producer;
     }
 
-    public void ProvideData(object data)
+    public async Task ProvideDataAsync(object data)
     {
-        var preprocessedData = T.PreprocessData(data);
+        var preprocessedData = await T.PreprocessDataAsync(data);
         foreach (var processor in subscribers)
         {
-            processor.ProvideData(preprocessedData);
+            await processor.ProvideDataAsync(preprocessedData);
         }
     }
 
-    public void RegisterDataProcessor(T processor)
+    public async Task RegisterDataProcessorAsync(T processor)
     {
-        if (Completion.Task.IsCompleted)
+        if (_completion.Task.IsCompleted)
         {
-            Completion = new();
-            _producer.RegisterDataProcessor(this);
+            _completion = new();
+            await _producer.RegisterDataProcessorAsync(this);
         }
         subscribers.Add(processor);
         processor.Done += Subscriber_Done;
@@ -44,9 +44,9 @@ public class PreprocessorWrapper<T> : IDataProcessor, IDataProducer<T> where T :
             subscribers.Remove((sender as IDataProcessor)!);
         }
 
-        if (subscribers.IsNullOrEmpty())
+        if (!subscribers.Any())
         {
-            Completion.SetResult();
+            _completion.SetResult();
             Done?.Invoke(this, EventArgs.Empty);
         }
     }
@@ -55,9 +55,9 @@ public class PreprocessorWrapper<T> : IDataProcessor, IDataProducer<T> where T :
     {
         if (timeout is not null)
         {
-            return Task.WhenAny(Task.Delay(timeout.Value), Completion.Task);
+            return Task.WhenAny(Task.Delay(timeout.Value), _completion.Task);
         }
 
-        return Completion.Task;
+        return _completion.Task;
     }
 }

@@ -9,6 +9,7 @@ using Quartz;
 using Respicere.Server.Jobs;
 using Respicere.Server.Models;
 using FFMediaToolkit;
+using Respicere.Server.Processors;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -70,7 +71,12 @@ builder.Services.ConfigureWritable<Configuration>(builder.Configuration.GetSecti
 
 if (cameraAcessible)
 {
-    builder.Services.AddSingleton<ICam>(new Cam(deviceDescriptor!, characteristics!));
+    var cam = new Cam(deviceDescriptor!, characteristics!);
+    builder.Services.AddSingleton<ICam>(cam);
+    builder.Services.AddSingleton<IDataProducer<IDataProcessor>>(cam);
+
+    builder.Services.AddSingleton<PreprocessorWrapper<MjpegProcessor>>();
+
     builder.Services.AddTransient<TakePhotoJob>();
     builder.Services.AddTransient<DeletePhotosJob>();
 }

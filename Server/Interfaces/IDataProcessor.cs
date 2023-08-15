@@ -2,7 +2,7 @@
 
 public interface IDataProcessor
 {
-    void ProvideData(object data);
+    Task ProvideDataAsync(object data);
     Task WaitAsync(TimeSpan? timeout = null);
 
     event EventHandler? Done;
