@@ -75,7 +75,7 @@ if (cameraAcessible)
     builder.Services.AddSingleton<ICam>(cam);
     builder.Services.AddSingleton<IDataProducer<IDataProcessor>>(cam);
 
-    builder.Services.AddSingleton<PreprocessorWrapper<MjpegProcessor>>();
+    builder.Services.AddSingleton<IDataProducer<MjpegProcessor>, PreprocessorWrapper<MjpegProcessor>>();
 
     builder.Services.AddTransient<TakePhotoJob>();
     builder.Services.AddTransient<DeletePhotosJob>();

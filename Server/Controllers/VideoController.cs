@@ -14,12 +14,12 @@ using Respicere.Server.Processors;
 public class VideoController : ControllerBase
 {
     private readonly ICam _cam;
-    private readonly PreprocessorWrapper<MjpegProcessor> _mjpegPreprocessor;
+    private readonly IDataProducer<MjpegProcessor> _mjpegProducer;
 
-    public VideoController(ICam cam, PreprocessorWrapper<MjpegProcessor> mjpegPreprocessor)
+    public VideoController(ICam cam, IDataProducer<MjpegProcessor> mjpegProducer)
     {
         _cam = cam;
-        _mjpegPreprocessor = mjpegPreprocessor;
+        _mjpegProducer = mjpegProducer;
     }
 
     [HttpGet("cam")]
@@ -64,7 +64,7 @@ public class VideoController : ControllerBase
             await Response.BodyWriter.FlushAsync();
         });
 
-        await _mjpegPreprocessor.RegisterDataProcessorAsync(session);
+        await _mjpegProducer.RegisterDataProcessorAsync(session);
 
         await Response.StartAsync();
 
