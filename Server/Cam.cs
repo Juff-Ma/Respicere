@@ -5,7 +5,6 @@ using Respicere.Server.Helpers;
 using Interfaces;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
-using System.Runtime.CompilerServices;
 
 public class Cam : ICam, IDataProducer<IDataProcessor>
 {
@@ -31,6 +30,10 @@ public class Cam : ICam, IDataProducer<IDataProcessor>
             _videoCharacteristics, GotNewFrame);
     }
 
+    /// <summary>
+    /// method for processing a new frame
+    /// </summary>
+    /// <param name="bufferScope">The buffer scope.</param>
     private async Task GotNewFrame(PixelBufferScope bufferScope)
     {
         byte[] data = bufferScope.Buffer.ExtractImage();
@@ -51,11 +54,6 @@ public class Cam : ICam, IDataProducer<IDataProcessor>
         }
 
         await LastFrame.SaveAsJpegAsync(stream);
-    }
-
-    public VideoCharacteristics[] GetVideoCharacteristics()
-    {
-        return VideoCharacteristics;
     }
 
     public async Task RegisterDataProcessorAsync(IDataProcessor processor)

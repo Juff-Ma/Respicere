@@ -22,16 +22,24 @@ public class VideoController : ControllerBase
         _mjpegProducer = mjpegProducer;
     }
 
+    /// <summary>
+    /// returns the cameras device name
+    /// </summary>
+    /// <returns>the camera name</returns>
     [HttpGet("cam")]
     public string GetCamName()
     {
         return _cam.CamName;
     }
 
+    /// <summary>
+    /// returns the video modes supported by the camera
+    /// </summary>
+    /// <returns>all possible modes</returns>
     [HttpGet("cam/modes")]
     public async IAsyncEnumerable<VideoMode> GetPossibleModes()
     {
-        var modes = _cam.GetVideoCharacteristics()
+        var modes = _cam.VideoCharacteristics
                             .Where(x => x.PixelFormat != FlashCap.PixelFormats.Unknown)
                             .Distinct(new DistinctCharacteristicsComparer())
                             .OrderByDescending(x => (x.Width * x.Height) + x.FramesPerSecond)
@@ -44,6 +52,9 @@ public class VideoController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// returns a stream of the cameras live picture, is kept alive
+    /// </summary>
     [HttpGet("cam/mjpeg")]
     public async Task Get()
     {
@@ -79,13 +90,19 @@ public class VideoController : ControllerBase
     private static byte[] CreateHeader(int length)
     {
         string header =
-            "--frame" + "\r\n" +
-            "Content-Type:image/jpeg\r\n" +
-            "Content-Length:" + length + "\r\n\r\n";
+            $"""
+            --frame\r\n
+            Content-Type:image/jpeg\r\n
+            Content-Length:{length}\r\n\r\n
+            """;
 
         return Encoding.ASCII.GetBytes(header);
     }
 
+    /// <summary>
+    /// Create an appropriate footer.
+    /// </summary>
+    /// <returns>the footer</returns>
     private static byte[] CreateFooter()
     {
         return Encoding.ASCII.GetBytes("\r\n");
