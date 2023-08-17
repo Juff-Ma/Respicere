@@ -10,6 +10,7 @@ using Respicere.Server.Jobs;
 using Respicere.Server.Models;
 using FFMediaToolkit;
 using Respicere.Server.Processors;
+using Respicere.Server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -76,6 +77,9 @@ if (cameraAcessible)
     builder.Services.AddSingleton<IDataProducer<IDataProcessor>>(cam);
 
     builder.Services.AddSingleton<IDataProducer<MjpegProcessor>, PreprocessorWrapper<MjpegProcessor>>();
+    builder.Services.AddSingleton<IDataProducer<VideoProcessor>, PreprocessorWrapper<VideoProcessor>>();
+
+    builder.Services.AddSingleton<IVideoWriter, VideoWriterService>();
 
     builder.Services.AddTransient<TakePhotoJob>();
     builder.Services.AddTransient<DeletePhotosJob>();
